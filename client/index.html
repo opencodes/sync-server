@@ -81,10 +81,10 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./js/jquery-1.10.2.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
+    <script src="http://162.243.20.178:3000/socket.io/socket.io.js"></script>
     <script >
           $(function(){
-            var socket = io.connect('http://localhost:3000');
+            var socket = io.connect('http://162.243.20.178:3000');
             socket.on('connect', function () {
               socket.on('message', function(message) {
                 $('#messages').html('<span class="label label-success">Connected</span>');
@@ -103,7 +103,7 @@
 				      };
 
 				      $.ajax({
-				    	    url:'http://localhost:3000/client/placeorder',
+				    	    url:'http://162.243.20.178:3000/client/placeorder',
 				    	    data:formdata,
 				    	    jsonpCallback: 'jsonCallback',
 				    	    dataType: 'jsonp',
