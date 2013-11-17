@@ -8,13 +8,13 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../docs-assets/ico/favicon.png">
 
-    <title><%= title %></title>
+    <title>Client</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="./css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link href="./css/sticky-footer-navbar.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../docs-assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -41,7 +41,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"><%= title %></a>
+            <a class="navbar-brand" href="#">Client</a>
           </div>
           
         </div>
@@ -50,35 +50,33 @@
       <!-- Begin page content -->
       <div class="container">
         <div class="page-header">
-          <h1><%= title %></h1>
+          <h1>Client</h1>
         </div>
-        <div class="bs-example">
-         <h3>All orders</h3>
-	      <table class="table table-striped">
-	        <thead>
-	          <tr>
-	            <th>#</th>
-	            <th>Item</th>
-	            <th>Qty</th>
-	            <th>Date/Time</th>
-	            <th>Status</th>
-	          </tr>
-	        </thead>
-	        <tbody>
-	        <% for(var index in items.data){ %>
-	          <tr>
-	            <td><%=items.data[index].order_id%></td>
-	            <td><%=items.data[index].itemjson%></td>
-	            <td><%=items.data[index].qty%></td>
-	            <td><%=items.data[index].datetime%></td>
-	            <td><%=items.data[index].status%></td>
-	          </tr>
-	        <% } %> 
-	          
-	         
-	        </tbody>
-	      </table>
-    </div>
+        <div class="alert alert-success" style="display:none;">...</div>
+        
+        <div class="well">
+        <form class="form-inline" role="form" id="clientform">
+        	<div class="row">
+			  <div class="col-md-4">
+				  <div class="form-group">
+				    <h4>ITEM 1</h4>
+				    <input type="hidden" name="item_id" value="1" > 
+				    <input type="hidden" name="item_name" value="ITEM 1" >
+				    <input type="hidden" name="item_price" value="20" >				    
+				  </div>
+		  	 </div>
+			 <div class="col-md-4">
+				  <div class="col-xs-4">
+				    <input type="text" class="form-control" name="qty" value="1">
+				  </div>
+		  	 </div>
+		  	 <div class="col-md-4">
+				  <button type="submit" class="btn btn-primary btn-lg btn-block">Place Order</button>
+		  	 </div>
+			</div>
+		</form>        
+        </div>
+        <div id="populate"></div>
       </div>
     </div>
 
@@ -93,5 +91,37 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/js/jquery-1.10.2.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+	<script>
+	  var socket = io.connect('http://localhost:3000');
+	  
+	</script>
+    <script >
+    $("form" ).submit(function( event ) {
+      event.preventDefault();
+      var formdata = $('#clientform').serialize();
+
+      $.ajax({
+    	    url:'http://localhost:3000/client/placeorder',
+    	    data:formdata,
+    	    jsonpCallback: 'jsonCallback',
+    	    dataType: 'jsonp',
+    	    beforeSend:function(){
+    	             
+    	    },
+    	    complete:function(){
+    	    	$('.alert.alert-success').show().text('Order Placed');
+    	    	setTimeout(function() {
+    	    		$('.alert.alert-success').hide();
+    	    	}, 2000);
+    	    },
+    	    success:function(result){
+    	    	console.log(result);
+    	    	socket.emit('post', { my: result });
+    	    }
+    	});
+    });
+       
+    </script>
   </body>
 </html>

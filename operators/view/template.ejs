@@ -1,0 +1,14 @@
+<% for(var index in data.items){ %>
+<% var k = parseInt(index)+1; %>
+  <tr>
+	<td><%=data.items[index].order_id%></td>
+	<td><%=data.items[index].itemjson%></td>
+	<td><%=data.items[index].qty%></td>
+	<td><%=data.items[index].status%></td>
+	<td style="width:190px;">
+	<button type="button" class="btn btn-danger pull-left">Delete</button> 
+	<button type="button" class="btn btn-warning pull-right">Process</button> 
+	</td>
+
+  </tr>
+<% } %>

@@ -79,6 +79,7 @@
 	        </tbody>
 	      </table>
     </div>
+    <div id="msg"></div>
       </div>
     </div>
 
@@ -93,5 +94,19 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/js/jquery-1.10.2.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+	  var socket = io.connect('http://localhost:3000');
+	  socket.on('populate', function (data) {
+		console.log('yes')
+	    $('#msg').append('yes-----------')    
+	  });
+	  socket.on('news', function (data) {
+		   $('#msg').append('yes-----------')
+		    console.log(data);
+		    socket.emit('post', { my: 'data' });
+	  });
+	</script>
   </body>
 </html>
