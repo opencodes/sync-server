@@ -101,9 +101,10 @@
     	    	$('#data-table').html(html);    	    	
     	    }
         });
+	  	
      });
           $(function(){
-            var socket = io.connect('http://localhost:3000');
+            var socket = io.connect('http://162.243.20.178:3000');
             socket.on('connect', function () {
               var ordercount = 0;
               /////////////////////////////////////
@@ -147,7 +148,23 @@
                   setTimeout(function(){$('#notification').hide();},3000);
               });
             });
-
+			
+            $(".table-striped" ).on('click','.delete-order',function( event ) {
+    	        event.preventDefault();
+    	        var data = {
+    	          status :'danger',
+    	          action : 'deleteorder',
+    	          note : '1 Order has been deleted',
+    	          order : {
+    	            qty : 1,
+    	            item : 'ITEM-1',
+    	            price : '20'
+    	          }
+    	        }
+    	        $('#data-table tr:first').remove(); 
+    	        console.log('Delete Order')
+    	        socket.send(JSON.stringify(data));
+    	     });
           });
                         
     </script>

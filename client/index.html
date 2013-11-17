@@ -48,23 +48,32 @@
       </div>
 
       <!-- Begin page content -->
-      <div class="container">
-        <div class="page-header">
-          <h1>Client</h1>
-        </div>
+      <div class="container">        
         <div class="alert alert-success" style="display:none;">...</div>
-        
+        <!-- Begin page content -->
+      <div class="container">  
+	        <div class="bs-example">
+	         <h3>All Pending orders</h3>
+		      <table class="table table-striped">
+		        <thead>
+		          <tr>
+		             <th>Order ID</th>
+		            <th>Item</th>
+		            <th>Qty</th>
+		            <th>Status</th>
+		            <th>Action</th>
+		          </tr>
+		        </thead>
+		        <tbody id="data-table">
+		          
+		        </tbody>
+		      </table>
+	    </div>
+      </div>
         <div class="well">
           <!-- Standard button -->
             <button type="button" class="btn btn-default" id="place-order">Place Order</button>
 
-            <!-- Provides extra visual weight and identifies the primary action in a set of buttons -->
-            <button type="button" class="btn btn-primary" id="delete-order">Delete Order</button>
-
-            <!-- Indicates a successful or positive action -->
-            <button type="button" class="btn btn-success" id="update-order">Update Order</button>
-
-           
         </div>
         <div id="populate"></div>
       </div>
@@ -81,14 +90,63 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="./js/jquery-1.10.2.min.js"></script>
     <script src="./js/bootstrap.min.js"></script>
+    <script src="./js/ejs_production.js"></script>
     <script src="http://162.243.20.178:3000/socket.io/socket.io.js"></script>
     <script >
+  //Load Default Data
+    $(document).ready(function(){
+  	  $.ajax({
+    	    url:'http://162.243.20.178:3000/operator/',
+    	    jsonpCallback: 'jsonCallback',
+    	    dataType: 'jsonp',
+    	    beforeSend:function(){
+    	    	$('tbody').html('Data Loading .....');	        
+    	    },    	    
+    	    success:function(result){
+    	    	$('#order-count').text(result.data.no);
+    	    	var html = new EJS({url: './view/template.ejs'}).render(result);
+    	    	$('#data-table').html(html);    	    	
+    	    }
+        });
+     });
           $(function(){
             var socket = io.connect('http://162.243.20.178:3000');
             socket.on('connect', function () {
+             
+			 /////////////////////////////////////
               socket.on('message', function(message) {
-                $('#messages').html('<span class="label label-success">Connected</span>');
+                console.log(message);
+                $('#notification').show();
+                $('#notification').attr('class','').addClass('alert alert-info').text(message.note);
+                setTimeout(function(){$('#notification').hide();},3000);
               });
+              ////////////////////////////////////
+              socket.on('placeorder', function(message) {
+                console.log(message);
+                $('#notification').show();                
+    	    	var html = new EJS({url: './view/singleorder.ejs'}).render(message.order);
+    	    	$('#data-table').append(html); 
+    	    	
+                $('#order-count').text(parseInt($('#order-count').text())+1);
+                $('#notification').attr('class','').addClass('alert alert-success').text(message.note);
+                setTimeout(function(){$('#notification').hide();},3000);
+              });
+              ////////////////////////////////////
+              socket.on('deleteorder', function(message) {
+                  console.log(message);
+                  $('#notification').show();
+                  $('#order-count').text(parseInt($('#order-count').text())-1);
+                  $('#data-table tr:first').remove(); 
+                  $('#notification').attr('class','').addClass('alert alert-danger').text(message.note);
+                  setTimeout(function(){$('#notification').hide();},3000);
+                });
+              ///////////////////////////////////
+              socket.on('updateorder', function(message) {
+                  console.log(message);
+                  $('#notification').show();
+                  $('#notification').attr('class','').addClass('alert alert-warning').text(message.note);
+                  setTimeout(function(){$('#notification').hide();},3000);
+                });
               socket.on('disconnect', function() {
                 $('#messages').html('<span class="label label-danger">disconnected</span>');
               });
@@ -125,6 +183,8 @@
 				    	                order : result.data.order
 				    	        };
 				    	    	console.log(data);
+				    	    	var html = new EJS({url: './view/singleorder.ejs'}).render(result.data.order);
+				    	    	$('#data-table').append(html);
 				    	    	socket.send(JSON.stringify(data));
 				    	    }
 				    	});
@@ -136,20 +196,22 @@
               postData();
               
             });
-            $("#delete-order" ).click(function( event ) {
-              event.preventDefault();
-              var data = {
-                status :'danger',
-                action : 'deleteorder',
-                note : '1 Order has been deleted',
-                order : {
-                  qty : 1,
-                  item : 'ITEM-1',
-                  price : '20'
-                }
-              }
-              socket.send(JSON.stringify(data));
-            });
+            $(".table-striped" ).on('click','.delete-order',function( event ) {
+    	        event.preventDefault();
+    	        var data = {
+    	          status :'danger',
+    	          action : 'deleteorder',
+    	          note : '1 Order has been deleted',
+    	          order : {
+    	            qty : 1,
+    	            item : 'ITEM-1',
+    	            price : '20'
+    	          }
+    	        }
+    	        $('#data-table tr:first').remove(); 
+    	        console.log('Delete Order')
+    	        socket.send(JSON.stringify(data));
+    	     });
             $("#update-order" ).click(function( event ) {
               event.preventDefault();
               var data = {
