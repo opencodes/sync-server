@@ -56,26 +56,26 @@
          <h3>All orders</h3>
 	      <table class="table table-striped">
 	        <thead>
-	          <tr>
-	            <th>#</th>
-	            <th>Item</th>
-	            <th>Qty</th>
-	            <th>Date/Time</th>
-	            <th>Status</th>
-	          </tr>
-	        </thead>
-	        <tbody>
+		          <tr>
+		             <th>Order ID</th>
+		            <th>Item</th>
+		            <th>Qty</th>
+		            <th>Status</th>
+		            <th>Action</th>
+		          </tr>
+		        </thead>
+	        <tbody id="data-table">
 	        <% for(var index in items.data){ %>
 	          <tr>
 	            <td><%=items.data[index].order_id%></td>
 	            <td><%=items.data[index].itemjson%></td>
 	            <td><%=items.data[index].qty%></td>
-	            <td><%=items.data[index].datetime%></td>
 	            <td><%=items.data[index].status%></td>
+	            <td style="width:190px;">
+				<button type="button" class="btn btn-danger pull-left delete-order">Delete</button> 
+				</td>
 	          </tr>
 	        <% } %> 
-	          
-	         
 	        </tbody>
 	      </table>
     </div>
@@ -93,5 +93,73 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="/js/jquery-1.10.2.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/ejs_production.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script >
+    var host = "http://10.207.66.120:3000";
+    $(function(){
+        var socket = io.connect(host);
+        socket.on('connect', function () {
+          var ordercount = 0;
+          /////////////////////////////////////
+          socket.on('message', function(message) {
+            console.log(message);
+            $('#notification').show();
+            $('#notification').attr('class','').addClass('alert alert-info').text(message.note);
+            setTimeout(function(){$('#notification').hide();},3000);
+          });
+          ////////////////////////////////////
+          socket.on('placeorder', function(message) {
+            console.log(message);
+            $('#notification').show();                
+	    	var html = new EJS({url: '/view/singleorder.ejs'}).render(message.order);
+	    	$('#data-table').append(html); 
+	    	
+            $('#order-count').text(parseInt($('#order-count').text())+1);
+            $('#notification').attr('class','').addClass('alert alert-success').text(message.note);
+            setTimeout(function(){$('#notification').hide();},3000);
+          });
+          ////////////////////////////////////
+          socket.on('deleteorder', function(message) {
+              console.log(message);
+              $('#notification').show();
+              $('#order-count').text(parseInt($('#order-count').text())-1);
+              $('#data-table tr:first').remove(); 
+              $('#notification').attr('class','').addClass('alert alert-danger').text(message.note);
+              setTimeout(function(){$('#notification').hide();},3000);
+            });
+          ///////////////////////////////////
+          socket.on('updateorder', function(message) {
+              console.log(message);
+              $('#notification').show();
+              $('#notification').attr('class','').addClass('alert alert-warning').text(message.note);
+              setTimeout(function(){$('#notification').hide();},3000);
+            });
+          //////////////////////////////////
+          socket.on('disconnect', function() {
+        	  $('#notification').show();
+              $('#notification').attr('class','').addClass('alert alert-warning').text(message.note);
+              setTimeout(function(){$('#notification').hide();},3000);
+          });
+        });
+		
+        $(".table-striped" ).on('click','.delete-order',function( event ) {
+	        event.preventDefault();
+	        var data = {
+	          status :'danger',
+	          action : 'deleteorder',
+	          note : '1 Order has been deleted',
+	          order : {
+	            qty : 1,
+	            item : 'ITEM-1',
+	            price : '20'
+	          }
+	        }
+	        $('#data-table tr:first').remove(); 
+	        console.log('Delete Order')
+	        socket.send(JSON.stringify(data));
+	     });
+      });
+    </script>
   </body>
 </html>
