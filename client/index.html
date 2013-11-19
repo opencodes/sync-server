@@ -151,6 +151,17 @@
                 $('#messages').html('<span class="label label-danger">disconnected</span>');
               });
             });
+            var data = {
+                    status :'success',
+                    action : 'updateorder',
+                    note : 'Order has been updated',
+                    order : {
+                      qty : 2,
+                      item : 'ITEM-1',
+                      price : '20'
+                    }
+            }
+            socket.send(JSON.stringify(data));
 			function postData(){
 				
 				      var formdata = {

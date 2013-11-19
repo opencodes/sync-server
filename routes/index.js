@@ -10,7 +10,7 @@ module.exports = function (app) {
 		  if(!err && result){
 			  results = {no : result.length,data:result};
 		  }
-		  res.render('index.ejs',{ title: 'Server',items:results});
+		  res.render('home.ejs',{ title: 'Server',items:results});
 	  });    
   });  
   require('./operator')(app);

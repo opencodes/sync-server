@@ -38,21 +38,7 @@ var messages = [];
 io.sockets.on('connection', function (socket) {
   socket.on('message', function (msg) {
     var msg = JSON.parse(msg);
-    //messages.push(msg); 
-    switch(msg.action)
-    {
-	    case 'placeorder':
-	    	socket.broadcast.emit('placeorder', msg);
-	      break;
-	    case 'deleteorder':
-	    	socket.broadcast.emit('deleteorder', msg);
-	      break;
-	    case 'updateorder':
-	    	socket.broadcast.emit('updateorder', msg);
-	      break;
-	    default:
-	    	socket.broadcast.emit('message', msg);
-    }
+    socket.broadcast.emit(msg.action, msg);    
   });  
   // send messages to new clients
   messages.forEach(function(msg) {
