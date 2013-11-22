@@ -1,4 +1,4 @@
 sync-server
 ===========
 
-Sync Application with all devices and users.
+Sync your application with all devices and users.
