@@ -1,5 +1,6 @@
 body {
   padding-top: 60px;
+  background-color: #F5F6F6;
 }
 .starter-template {
   padding: 50px 15px;
@@ -15,22 +16,31 @@ body {
 .panel-default {
   border-color: #DDDDDD;
 }
-
+.dashbox .panel-body {
+  min-height: 102px;
+  padding: 5px;
+}
 .dashbox .panel-right {
   border-radius: 0 4px 4px 0;
   float: right;
-  padding-left: 20px;
   padding-top: 10px;
   position: relative;
+  text-align: center;
   width: 100%;
 }
+
 .dashbox .panel-right .number {
-  color: #666666;
   font-size: 30px;
   font-weight: 400;
 }
-.dashbox .panel-right .title {
+.dashbox.danger{color: #d9534f}
+.dashbox.info{color: #5bc0de}
+.dashbox.primary{color: #428bca}
+.dashbox.success{color: #5cb85c}
+.dashbox.warning{color: #f0ad4e}  
+.dashbox .title {
   text-transform: uppercase;
+  font-weight: bold;
 }
 .dashbox .panel-right .label {
   font-size: 11px;
@@ -38,3 +48,15 @@ body {
   right: 5px;
   top: 5px;
 }
+.code {
+  background: none repeat scroll 0 0 #000000;
+  border-radius: 0;
+  color: #FFFFFF;
+  display: block;
+  font-size: 11px;
+  height: 322px;
+  padding:5px;  
+  width: 100%;
+  overflow: hidden; 
+}
+#urlhits{text-align: justify; word-wrap: break-word;}
